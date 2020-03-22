@@ -90,6 +90,7 @@ def topListByNumberOfMessages(messagesList, nBest):
     #convert to lists
     members, numMessages = zip(*membersDict.items())
     numMessages, members = sort_together([numMessages, members], reverse=True)
+    nBest = min(nBest, len(members))
     print("--------------------------------")
     print("Top %d by number of messages:"%nBest)
     print("--------------------------------")
@@ -110,6 +111,7 @@ def topListByNumberOfCharacters(messagesList, nBest):
     #convert to lists
     members, numChars = zip(*membersDict.items())
     numChars, members = sort_together([numChars, members], reverse=True)
+    nBest = min(nBest, len(members))
     print("--------------------------------------------")
     print("Top %d by total number of typed characters:"%nBest)
     print("--------------------------------------------")
@@ -135,6 +137,7 @@ def topListByAverageMessageSize(messagesList, nBest):
     for i in range(len(messagesData)):
         averageSizes.append(float(messagesData[i][1])/ messagesData[i][0])
     averageSizes, members = sort_together([averageSizes, members], reverse=True)
+    nBest = min(nBest, len(members))
     print("-----------------------------------------")
     print("Top %d by average message size:"%nBest)
     print("-----------------------------------------")
@@ -157,6 +160,7 @@ def topListWords(messagesList, nBest):
     #convert to lists
     words, occurrences = zip(*wordsDict.items())
     occurrences, words = sort_together([occurrences, words], reverse=True)
+    nBest = min(nBest, len(words))
     print("-------------------------")
     print("Top %d used words:"%nBest)
     print("-------------------------")
