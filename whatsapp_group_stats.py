@@ -169,8 +169,8 @@ def topListWords(messagesList, nBest):
 #-------------------------------------------------------------------------
 parser = argparse.ArgumentParser(description='Generate statistics from whatsapp group history')
 parser.add_argument('-i', '--inputfile', type = str, required = True, help = 'whatsapp group exported history file')
-parser.add_argument('-n', '--nbest', type = int, required = False, help = 'Number of items of top list', default = 10)
-parser.add_argument('-d', '--datetimeformat', type = str, required = False, help = 'date time parsing format (for datetime.strptime function - language/country dependant)', default = '%d/%m/%Y %H:%M')
+parser.add_argument('-n', '--nbest', type = int, required = False, help = 'Number of items of top list (default = 10)', default = 10)
+parser.add_argument('-d', '--datetimeformat', type = str, required = False, help = 'date time parsing format (for datetime.strptime function - language/country dependant - (default = \'%%d/%%m/%%Y %%H:%%M\' - Brazil))', default = '%d/%m/%Y %H:%M')
 
 ns = parser.parse_args()
 inputFile      = ns.inputfile
