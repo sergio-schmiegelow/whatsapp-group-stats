@@ -58,7 +58,6 @@ def plotMessagesPerDay(messagesList):
     daysDict = {}
     day = firstDay
     while (day <= lastDay):
-        #print("day =", day)
         daysDict[day] = 0
         day = day + timedelta(days=1)
     #sum number of messages in each day
@@ -67,12 +66,12 @@ def plotMessagesPerDay(messagesList):
     #convert to lists
     days, numMessages = zip(*daysDict.items())
     sort_together([days, numMessages])
-    #print("days =", days)
-    #print("numMessages =", numMessages)
     print("Ploting group activity on time")
     print("Average: %f messages/day"%np.mean(numMessages))
-    #print(days)
-    #print(numMessages)
+    maxIndex = np.argmax(numMessages)
+    maxMessages = numMessages[maxIndex]
+    maxDay = days[maxIndex]
+    print("Day of maximum: %s with %d messages"%(str(maxDay), maxMessages))
     plt.plot(days, numMessages)
     plt.xticks(rotation=45)
     plt.title("Messages/day")
