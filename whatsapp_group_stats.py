@@ -7,6 +7,16 @@ import argparse
 HEADER_LINE = 0
 TEXT_LINE = 1
 #-------------------------------------------------------------------------
+def readWordsListFile(stopWordFilename):
+    stopWordsList = []
+    with open(stopWordFilename, 'rt') as f:
+        lines = f.readlines()
+        for word in lines:
+            word = word.strip().lower()
+            if len(word) > 0:
+                stopWordsList.append(word)
+    return stopWordsList
+#-------------------------------------------------------------------------
 def parseFile(filename, dateTimeFormat):
     messagesList = []
     messageDict = None
@@ -145,17 +155,19 @@ def topListByAverageMessageSize(messagesList, nBest):
         print('%s: %1.1f characters'%(members[i], averageSizes[i]))
     print("Average of all members: %f characters"%np.mean(averageSizes))
 #-------------------------------------------------------------------------
-def topListWords(messagesList, nBest):
+def topListWords(messagesList, wordsToRemove, nBest):
     #create a dict with all members
     wordsDict = {}
     for message in messagesList:
         text = message['text']
         words = text.split()
         for word in words:
-            if word not in wordsDict.keys():
-                wordsDict[word] = 1
-            else:
-                wordsDict[word] += 1
+            word = word.lower()
+            if word not in wordsToRemove:
+                if word not in wordsDict.keys():
+                    wordsDict[word] = 1
+                else:
+                    wordsDict[word] += 1
     #convert to lists
     words, occurrences = zip(*wordsDict.items())
     occurrences, words = sort_together([occurrences, words], reverse=True)
@@ -167,14 +179,27 @@ def topListWords(messagesList, nBest):
         print('%s: %d occurrences'%(words[i], occurrences[i]))
 #-------------------------------------------------------------------------
 parser = argparse.ArgumentParser(description='Generate statistics from whatsapp group history')
-parser.add_argument('-i', '--inputfile', type = str, required = True, help = 'whatsapp group exported history file')
+parser.add_argument('-i', '--inputfile', type = str, required = True, help = 'Whatsapp group exported history file')
 parser.add_argument('-n', '--nbest', type = int, required = False, help = 'Number of items of top list (default = 10)', default = 10)
-parser.add_argument('-d', '--datetimeformat', type = str, required = False, help = 'date time parsing format (for datetime.strptime function - language/country dependant - (default = \'%%d/%%m/%%Y %%H:%%M\' - Brazil))', default = '%d/%m/%Y %H:%M')
+parser.add_argument('-d', '--datetimeformat', type = str, required = False, help = 'Date time parsing format (for datetime.strptime function - language/country dependant - (default = \'%%d/%%m/%%Y %%H:%%M\' - Brazil))', default = '%d/%m/%Y %H:%M')
+parser.add_argument('-s', '--notremovestopwords', action = 'store_true', help = 'Do not remove stop words on calculation of top used words')
+parser.add_argument('-r', '--removewordsfile', type = str, required = False, help = 'filename with words to remove on calculation of top used words')
+
 
 ns = parser.parse_args()
-inputFile      = ns.inputfile
-nBest          = ns.nbest
-dateTimeFormat = ns.datetimeformat
+inputFile          = ns.inputfile
+nBest              = ns.nbest
+dateTimeFormat     = ns.datetimeformat
+notRemoveStopWords = ns.notremovestopwords
+removeWordsFile    = ns.removewordsfile
+
+if notRemoveStopWords:
+    wordsToRemove = []
+else:
+    wordsToRemove = readWordsListFile('stopwords.txt')
+
+if removeWordsFile:
+    wordsToRemove += readWordsListFile(removeWordsFile)
 
 messagesList = parseFile(inputFile, dateTimeFormat)
 
@@ -185,6 +210,6 @@ topListByNumberOfCharacters(messagesList, nBest)
 print("")
 topListByAverageMessageSize(messagesList, nBest)
 print("")
-topListWords(messagesList, nBest)
+topListWords(messagesList, wordsToRemove, nBest)
 print("")
 plotMessagesPerDay(messagesList)
